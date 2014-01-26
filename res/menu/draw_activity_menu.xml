@@ -5,10 +5,6 @@
         android:title="@string/new_menu"
         />
     
-    <item android:id="@+id/open_menu"
-        android:title="@string/open_menu"
-        />
-    
     <item android:id="@+id/save_menu"
         android:title="@string/save_menu"
         />

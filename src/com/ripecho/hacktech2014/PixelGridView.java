@@ -1,5 +1,7 @@
 package com.ripecho.hacktech2014;
 
+import java.util.Stack;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -80,7 +82,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 	        final float y = ev.getY(pointerIndex);
 
 	        // Only move if the ScaleGestureDetector isn't processing a gesture.
-	        if (!sgd.isInProgress()) {
+	        if (!sgd.isInProgress() && ev.getPointerCount() > 1) {
 	            final float dx = x - mLastTouchX;
 	            final float dy = y - mLastTouchY;
 
@@ -177,7 +179,47 @@ public class PixelGridView extends View implements View.OnClickListener{
 	
 	private void updateBitmap(float x, float y, Bitmap bmp, int col){
 		if ((int)x >= 0 && (int)x < parent.getBitmap().getWidth() && (int)y >= 0 && (int)y < parent.getBitmap().getHeight())
-			bmp.setPixel((int)x, (int)y, col);
+		{
+			if (parent.getTool() == Tool.PENCIL)
+				bmp.setPixel((int)x, (int)y, col);
+			else if (parent.getTool() == Tool.ERASER)
+				bmp.setPixel((int)x, (int)y, Color.TRANSPARENT);
+			else if (parent.getTool() == Tool.EYE_DROPPER)
+			{
+				parent.setColor(bmp.getPixel((int)x, (int)y));
+				parent.setTool(Tool.PENCIL);
+			}
+			else
+			{
+				int baseCol = bmp.getPixel((int)x, (int)y);
+				Stack<Coord> s = new Stack<Coord>();
+				s.push(new Coord((int)x, (int)y));
+				while (!s.empty())
+				{
+					Coord p = s.pop();
+					if (p.x < 0 || p.x >= bmp.getWidth() || p.y < 0 || p.y >= bmp.getHeight())
+						continue;
+					if (bmp.getPixel(p.x, p.y) == baseCol)
+					{
+						bmp.setPixel(p.x, p.y, parent.getColor());
+						s.push(new Coord(p.x + 1, p.y));
+						s.push(new Coord(p.x - 1, p.y));
+						s.push(new Coord(p.x, p.y + 1));
+						s.push(new Coord(p.x, p.y - 1));
+					}
+				}
+			}
+		}
+	}
+	
+	private class Coord
+	{
+		public int x, y;
+		public Coord(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
 	}
 	
 	public void onClick(View v){

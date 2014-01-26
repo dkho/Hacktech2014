@@ -9,6 +9,56 @@
     tools:context=".DrawActivity" 
     android:background="@drawable/backaround">
     
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        >
+        <Button
+            android:id="@+id/pencil_button"
+     		android:layout_width="wrap_content"
+     		android:layout_height="wrap_content"
+     		android:text="Pencil"
+     		android:onClick="usePencil"
+     		android:textSize="10dp"
+     		/>
+        <Button
+            android:id="@+id/eraser_button"
+     		android:layout_width="wrap_content"
+     		android:layout_height="wrap_content"
+     		android:text="Eraser"
+     		android:onClick="useEraser"
+     		android:textSize="10dp"
+     		/>
+        <Button
+            android:id="@+id/eyedropper_button"
+     		android:layout_width="wrap_content"
+     		android:layout_height="wrap_content"
+     		android:text="Eyedropper"
+     		android:onClick="useEyedropper"
+     		android:textSize="10dp"
+     		/>
+        <Button
+            android:id="@+id/bucket_button"
+     		android:layout_width="wrap_content"
+     		android:layout_height="wrap_content"
+     		android:text="Fill"
+     		android:onClick="useBucket"
+     		android:textSize="10dp"
+     		/>
+        <Button
+            android:id="@+id/file_button"
+     		android:layout_width="wrap_content"
+     		android:layout_height="wrap_content"
+     		android:text="File"
+     		android:onClick="openFileMenu"
+     		android:textSize="10dp"
+     		/>
+        
+        
+    </LinearLayout>
+    
     <com.ripecho.hacktech2014.ToolBarView
         android:id="@+id/tool_bar"
         android:layout_width="fill_parent"

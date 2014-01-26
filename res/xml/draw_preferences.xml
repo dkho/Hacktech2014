@@ -23,11 +23,5 @@
         android:selectAllOnFocus="true"
         android:key="height_key"
         android:title="@string/height" />
-    
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="example_checkbox"
-        android:title="@string/palette_lock" />
-    
 
 </PreferenceScreen>

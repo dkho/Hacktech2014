@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.PopupMenu;
 
 public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
@@ -32,6 +33,7 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 	private Bitmap bitmap;
 	private ArrayList<CursorOrigin> cursorOrigins = new ArrayList<CursorOrigin>(10);
 	private PopupMenu fileMenu;
+	private Button[] buttonList;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,11 +52,19 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 		PixelGridView pgv = (PixelGridView)findViewById(R.id.pixel_grid);
 		pgv.setParent(this);
 		
-		ToolBarView tbv = (ToolBarView)findViewById(R.id.tool_bar);
+		Button fileButton = (Button)findViewById(R.id.file_button);
 		//tbv.setParent(this);
-		fileMenu = new PopupMenu(this, tbv);
+		fileMenu = new PopupMenu(this, fileButton);
 		fileMenu.inflate(R.menu.draw_activity_menu);
 		fileMenu.setOnMenuItemClickListener(this);
+		
+		buttonList = new Button[4];
+		buttonList[0] = (Button)findViewById(R.id.pencil_button);
+		buttonList[1] = (Button)findViewById(R.id.eraser_button);
+		buttonList[2] = (Button)findViewById(R.id.eyedropper_button);
+		buttonList[3] = (Button)findViewById(R.id.bucket_button);
+		
+		usePencil(null);
 	}
 	
 	public void testFunc(View v){
@@ -104,7 +114,7 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 		return colorLock;
 	}
 	
-	public void openFileMenu() {
+	public void openFileMenu(View v) {
 		fileMenu.show();
 	}
 	
@@ -162,8 +172,8 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 		switch (item.getItemId())
 		{
 		case R.id.new_menu:
-			return true;
-		case R.id.open_menu:
+			filename = "Untitled";
+			bitmap = Bitmap.createBitmap(DEFAULT_DIMENSION, DEFAULT_DIMENSION, Bitmap.Config.ARGB_8888);
 			return true;
 		case R.id.save_menu:
 			try
@@ -200,8 +210,9 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		// Replace bitmap if different size is specified
 		
-		if (Integer.parseInt(sp.getString("width_key", "-1")) != bitmap.getWidth() 
-				|| Integer.parseInt(sp.getString("height_key", "-1")) != bitmap.getHeight())
+		if ((Integer.parseInt(sp.getString("width_key", "-1")) != bitmap.getWidth() 
+				|| Integer.parseInt(sp.getString("height_key", "-1")) != bitmap.getHeight()) &&
+				Integer.parseInt(sp.getString("width_key", "-1")) > 0 && Integer.parseInt(sp.getString("height_key", "-1")) > 0)
 		{
 			Bitmap new_bitmap = Bitmap.createBitmap(Integer.parseInt(sp.getString("width_key", "-1")), Integer.parseInt(sp.getString("height_key", "-1")), Bitmap.Config.ARGB_8888);
 			for (int i = 0; i < bitmap.getWidth(); i++)
@@ -212,5 +223,39 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 			((PixelGridView)findViewById(R.id.pixel_grid)).updateSize();
 		}
 		filename = sp.getString("filename_key",  "Untitled");
+	}
+	
+	public void usePencil(View v)
+	{
+		curTool = Tool.PENCIL;
+		resetButtons();
+		buttonList[0].setEnabled(false);
+	}
+	
+	public void useEraser(View v)
+	{
+		curTool = Tool.ERASER;
+		resetButtons();
+		buttonList[1].setEnabled(false);
+	}
+	
+	public void useEyedropper(View v)
+	{
+		curTool = Tool.EYE_DROPPER;
+		resetButtons();
+		buttonList[2].setEnabled(false);
+	}
+	
+	public void useBucket(View v)
+	{
+		curTool = Tool.BUCKET;
+		resetButtons();
+		buttonList[3].setEnabled(false);
+	}
+	
+	private void resetButtons()
+	{
+		for (int i = 0; i < buttonList.length; i++)
+			buttonList[i].setEnabled(true);
 	}
 }
