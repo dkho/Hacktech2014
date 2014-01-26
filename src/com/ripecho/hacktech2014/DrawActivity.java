@@ -43,8 +43,6 @@ public class DrawActivity extends Activity implements PopupMenu.OnMenuItemClickL
 		for (int i = 0; i < new_width; i++)
 			for (int j = 0; j < new_height; j++)
 				bitmap.setPixel(i, j, 0x00000000);
-		bitmap.setPixel(0, 0, 0xFFFFFFFF);
-		bitmap.setPixel(15, 15, 0xFFFFFFFF);
 		
 		ColorPaletteView cpv = (ColorPaletteView)findViewById(R.id.color_palette);
 		cpv.setParent(this);

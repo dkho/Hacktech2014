@@ -39,6 +39,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 	private Bitmap gridMap; 
 
 	private Matrix inverse;
+	private boolean movementGesture = false;
 	
 	public PixelGridView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -52,7 +53,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 		toolPaint.setColor(parent.getColor());
 		bgPaint.setColor(Color.LTGRAY);
 		bgPaint.setStyle(Paint.Style.FILL);
-		setBackgroundColor(Color.DKGRAY);
+		setBackgroundColor(0xFF999999);
 		sgd = new ScaleGestureDetector(context, new ScaleListener());
 		
 		this.setOnClickListener(this);
@@ -83,6 +84,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 
 	        // Only move if the ScaleGestureDetector isn't processing a gesture.
 	        if (!sgd.isInProgress() && ev.getPointerCount() > 1) {
+	        	movementGesture = true;
 	            final float dx = x - mLastTouchX;
 	            final float dy = y - mLastTouchY;
 
@@ -99,7 +101,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 	    }
 	        
 	    case MotionEvent.ACTION_UP: {
-	    	if (ev.findPointerIndex(mActivePointerId) != -1)
+	    	if (ev.findPointerIndex(mActivePointerId) != -1 && !movementGesture)
 	    	{
 		    	int pointerIndex = ev.findPointerIndex(mActivePointerId);
 		    	Log.d("DEBUG", "x: " + convertX(ev.getX(pointerIndex)));
@@ -107,6 +109,8 @@ public class PixelGridView extends View implements View.OnClickListener{
 	            updateBitmap(convertX(ev.getX(pointerIndex)), convertY(ev.getY(pointerIndex)), parent.getBitmap(), parent.getColor());
 	    	}
 	        mActivePointerId = INVALID_POINTER_ID;
+	        if (ev.getPointerCount() <= 1)
+	        	movementGesture = false;
 	        break;
 	    }
 	        
@@ -157,7 +161,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 		/*float temp = x/width;
 		temp = temp*numPxX;
 		return (int)temp;*/
-		return (int)((x - mPosX / mScaleFactor) / mScaleFactor / szX);
+		return (int)((x - mPosX) / mScaleFactor / szX);
 		//return (int)x;
 	}
 	
@@ -165,7 +169,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 		/*float temp = y/height;
 		temp = temp*numPxY;
 		return (int)temp;*/
-		return (int)((y - mPosY / mScaleFactor) / mScaleFactor / szY);
+		return (int)((y - mPosY) / mScaleFactor / szY);
 	}
 	
 	private void convertCoord(float x, float y)
@@ -189,7 +193,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 				parent.setColor(bmp.getPixel((int)x, (int)y));
 				parent.setTool(Tool.PENCIL);
 			}
-			else
+			else if (bmp.getPixel((int)x, (int)y) != parent.getColor())
 			{
 				int baseCol = bmp.getPixel((int)x, (int)y);
 				Stack<Coord> s = new Stack<Coord>();
@@ -230,7 +234,7 @@ public class PixelGridView extends View implements View.OnClickListener{
 		super.onDraw(canvas);
 		
 		canvas.save();
-		canvas.scale(mScaleFactor, mScaleFactor, width/2, height/2);
+		canvas.scale(mScaleFactor, mScaleFactor);
 		//canvas.scale(mScaleFactor, mScaleFactor);
 		canvas.translate(mPosX/(mScaleFactor), mPosY/(mScaleFactor));
 		canvas.drawRect(0, 0, szX*numPxX, szY*numPxY, bgPaint);
